@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Информация о файле Яндекс.Диска</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; }
+        h1 { color: #333; }
+        .file-info { background: #f4f4f4; padding: 20px; border-radius: 5px; }
+        .file-info img { max-width: 100%; height: auto; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Информация о файле Яндекс.Диска</h1>
+    
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Получить файлы</button>
+    </form>
+    
+    {% if files %}
+        <h2>Список файлов:</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Имя файла</th>
+                    <th>Тип</th>
+                    <th>Размер (bytes)</th>
+                    <th>Дата создания</th>
+                    <th>Ссылка для скачивания</th> 
+                </tr>
+            </thead>
+            <tbody>
+                {% for file in files %}
+                    <tr>
+                        <td>{{ file.name }}</td>
+                        <td>{{ file.path }}</td>
+                        <td>{{ file.media_type }}</td>
+                        <td>{{ file.size }}</td>
+                        <td>{{ file.created }}</td>
+                        <td> 
+                            {% if file.download_link %}
+                                <a href="{{ file.download_link }}">Скачать</a> 
+                            {% else %}
+                                - 
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>{{ error }}</p> 
+    {% endif %}
+</body>
+</html>
