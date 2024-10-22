@@ -1,5 +1,6 @@
 from django import forms
 
+
 class KeyForm(forms.Form):
     """Форма для ввода публичного ключа и выбора типа файлов."""
     public_key = forms.URLField(

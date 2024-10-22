@@ -1,0 +1,56 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django specific
+*.log
+local_settings.py
+
+# Database
+db.sqlite3
+
+# Environment variables
+.env
+
+# Virtual environment
+venv/
+
+# Static files (collected during deployment)
+static/
+# Media files (uploaded by users)
+media/
+
+# IDE/editor files
+.idea/
+.vscode/
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Package manager files
+*.lock
+
+
+# Compiled translation files
+*.mo
+
+# Code coverage files
+.coverage
+htmlcov/
+*.egg-info
+
+# Test and build artifacts
+dist/
+build/
+
+# Automatically created setup scripts
+*.egg
+
+# MacOS specific files
+.AppleDouble
+.LSOverride
+
+# MyPy cache
+.mypy_cache

@@ -3,66 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Информация о файле Яндекс.Диска</title>
-    <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; }
-        h1 { color: #333; }
-        .file-info { background: #f4f4f4; padding: 20px; border-radius: 5px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 8px; }
-        th { background: #f2f2f2; }
-    </style>
+    <title>Информация о файлах Яндекс.Диска</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <h1>Информация о файле Яндекс.Диска</h1>
-    
-    <form method="post" action="{% url 'home' %}">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Получить файлы</button>
-    </form>
-    
-    {% if files %}
-        <h2>Список файлов:</h2>
-        <form method="post" action="{% url 'home' %}">
-            {% csrf_token %}
-            <input type="hidden" name="public_key" value="{{ form.cleaned_data.public_key }}">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Имя файла</th>
-                        <th>Тип</th>
-                        <th>Размер (bytes)</th>
-                        <th>Дата создания</th>
-                        <th>Ссылка для скачивания</th>
-                        <th>Выбрать</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for file in files %}
+    <div class="container">
+        <header>
+            <img src="{% static 'images/logo.png' %}" alt="Логотип" class="logo">
+            <h1>Файлы Яндекс.Диска</h1>
+        </header>
+
+        <section class="form-section">
+            <form method="post" action="{% url 'home' %}" class="form">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn-primary"><i class="fas fa-folder-open"></i> Получить файлы</button>
+            </form>
+        </section>
+
+        {% if files %}
+        <section class="files-section">
+            <h2>Список файлов:</h2>
+            <form method="post" action="{% url 'home' %}" class="files-form">
+                {% csrf_token %}
+                <input type="hidden" name="public_key" value="{{ form.cleaned_data.public_key }}">
+                <table class="file-table">
+                    <thead>
+                        <tr>
+                            <th>Имя файла</th>
+                            <th>Тип</th>
+                            <th>Ссылка для скачивания</th>
+                            <th>Выбрать</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for file in files %}
                         <tr>
                             <td>{{ file.name }}</td>
                             <td>{{ file.media_type }}</td>
-                            <td>{{ file.size }}</td>
-                            <td>{{ file.created }}</td>
                             <td>
                                 {% if file.download_link %}
-                                    <a href="{{ file.download_link }}">Скачать</a>
+                                <a href="{{ file.download_link }}" class="btn-download"><i class="fas fa-download"></i> Скачать</a>
                                 {% else %}
-                                    -
+                                <span class="no-link">Нет ссылки</span>
                                 {% endif %}
                             </td>
-                            <td>
-                                <input type="checkbox" name="file_paths" value="{{ file.path }}">
-                            </td>
+                            <td><input type="checkbox" name="file_paths" value="{{ file.path }}"></td>
                         </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            <button type="submit" name="download">Скачать выбранные файлы</button>
-        </form>
-    {% else %}
-        <p>{{ error }}</p>
-    {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <button type="submit" name="download" class="btn-secondary"><i class="fas fa-cloud-download-alt"></i> Скачать выбранные файлы</button>
+            </form>
+        </section>
+        {% else %}
+        <p class="error">{{ error }}</p>
+        {% endif %}
+    </div>
 </body>
 </html>

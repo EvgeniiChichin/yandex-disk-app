@@ -1,5 +1,5 @@
 import os
-from django.conf import settings 
+from django.conf import settings
 import zipfile
 import requests
 from django.core.cache import cache
@@ -9,6 +9,7 @@ from django.views import View
 from typing import Any, Dict, List, Optional, Union
 from .filter_files_by_type import filter_files_by_type
 from .forms import KeyForm
+
 
 class FileView(View):
 
@@ -29,7 +30,7 @@ class FileView(View):
     def post(self, request) -> HttpResponse:
         """Обрабатывает POST-запрос для получения данных с Yandex API или для скачивания файлов."""
         form = KeyForm(request.POST)
-        
+
         if 'download' in request.POST:
             return self.download_multiple_files(request)
 
@@ -43,7 +44,7 @@ class FileView(View):
                 return render(request, 'home.html', {'files': filtered_files, 'form': form})
             else:
                 return HttpResponse(f"Ошибка: {files_data}")
-        
+
         return render(request, 'home.html', {'form': form})
 
     def get_files_data(self, public_key: str) -> Union[List[Dict[str, Any]], str]:
@@ -52,7 +53,8 @@ class FileView(View):
 
         if data is None:
             params = {'public_key': public_key}
-            response = requests.get(self.api_url, headers=self.headers, params=params)
+            response = requests.get(
+                self.api_url, headers=self.headers, params=params)
 
             if response.status_code == 200:
                 data = response.json()
@@ -60,13 +62,13 @@ class FileView(View):
 
                 if 'type' in data and data['type'] == 'file':
                     return [self.process_single_file_data(data, public_key)]
-                
+
                 return self.process_files_data(data, public_key)
             else:
                 return f"Ошибка: {response.status_code}"
         else:
             if 'type' in data and data['type'] == 'file':
-               return [self.process_single_file_data(data, public_key)]
+                return [self.process_single_file_data(data, public_key)]
             return self.process_files_data(data, public_key)
 
     def process_single_file_data(self, data: Dict[str, Any], public_key: str) -> Dict[str, Any]:
@@ -86,7 +88,8 @@ class FileView(View):
                 file_info['download_link'] = download_url
             else:
                 file_info['download_link'] = None
-                print(f"Ошибка получения ссылки на скачивание для {data['name']}")
+                print(f"Ошибка получения ссылки на скачивание для {
+                      data['name']}")
         return file_info
 
     def process_files_data(self, data: Dict[str, Any], public_key: str) -> List[Dict[str, Any]]:
@@ -109,7 +112,8 @@ class FileView(View):
                     file_info['download_link'] = download_url
                 else:
                     file_info['download_link'] = None
-                    print(f"Ошибка получения ссылки на скачивание для {item['name']}")
+                    print(f"Ошибка получения ссылки на скачивание для {
+                          item['name']}")
             files_data.append(file_info)
         return files_data
 
@@ -118,8 +122,10 @@ class FileView(View):
         cache_key = f'download_url_{public_key}_{path}'
         download_url = cache.get(cache_key)
         if download_url is None:
-            download_url = f"{settings.DOWNLOAD_URL}{public_key}&path=%2F{path.lstrip('/')}"
-            download_response = requests.get(download_url, headers=self.headers)
+            download_url = f"{settings.DOWNLOAD_URL}{
+                public_key}&path=%2F{path.lstrip('/')}"
+            download_response = requests.get(
+                download_url, headers=self.headers)
             if download_response.status_code == 200:
                 download_url = download_response.json().get('href')
                 cache.set(cache_key, download_url, timeout=3600)
@@ -147,13 +153,16 @@ class FileView(View):
                         if response.status_code == 200:
                             zipf.writestr(file_path, response.content)
                         else:
-                            print(f"Ошибка скачивания файла {file_path}: {response.status_code}")
+                            print(f"Ошибка скачивания файла {
+                                  file_path}: {response.status_code}")
                     else:
                         print(f"Ошибка получения URL для файла {file_path}")
 
             with open(zip_file_path, 'rb') as zipf:
-                response = HttpResponse(zipf.read(), content_type='application/zip')
-                response['Content-Disposition'] = f'attachment; filename={zip_filename}'
+                response = HttpResponse(
+                    zipf.read(), content_type='application/zip')
+                response['Content-Disposition'] = f'attachment; filename={
+                    zip_filename}'
                 return response
 
         finally:
