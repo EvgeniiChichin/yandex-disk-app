@@ -8,13 +8,15 @@
         body { font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; }
         h1 { color: #333; }
         .file-info { background: #f4f4f4; padding: 20px; border-radius: 5px; }
-        .file-info img { max-width: 100%; height: auto; margin-top: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; }
+        th { background: #f2f2f2; }
     </style>
 </head>
 <body>
     <h1>Информация о файле Яндекс.Диска</h1>
     
-    <form method="post">
+    <form method="post" action="{% url 'home' %}">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit">Получить файлы</button>
@@ -22,37 +24,45 @@
     
     {% if files %}
         <h2>Список файлов:</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Имя файла</th>
-                    <th>Тип</th>
-                    <th>Размер (bytes)</th>
-                    <th>Дата создания</th>
-                    <th>Ссылка для скачивания</th> 
-                </tr>
-            </thead>
-            <tbody>
-                {% for file in files %}
+        <form method="post" action="{% url 'home' %}">
+            {% csrf_token %}
+            <input type="hidden" name="public_key" value="{{ form.cleaned_data.public_key }}">
+            <table>
+                <thead>
                     <tr>
-                        <td>{{ file.name }}</td>
-                        <td>{{ file.path }}</td>
-                        <td>{{ file.media_type }}</td>
-                        <td>{{ file.size }}</td>
-                        <td>{{ file.created }}</td>
-                        <td> 
-                            {% if file.download_link %}
-                                <a href="{{ file.download_link }}">Скачать</a> 
-                            {% else %}
-                                - 
-                            {% endif %}
-                        </td>
+                        <th>Имя файла</th>
+                        <th>Тип</th>
+                        <th>Размер (bytes)</th>
+                        <th>Дата создания</th>
+                        <th>Ссылка для скачивания</th>
+                        <th>Выбрать</th>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {% for file in files %}
+                        <tr>
+                            <td>{{ file.name }}</td>
+                            <td>{{ file.media_type }}</td>
+                            <td>{{ file.size }}</td>
+                            <td>{{ file.created }}</td>
+                            <td>
+                                {% if file.download_link %}
+                                    <a href="{{ file.download_link }}">Скачать</a>
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>
+                                <input type="checkbox" name="file_paths" value="{{ file.path }}">
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <button type="submit" name="download">Скачать выбранные файлы</button>
+        </form>
     {% else %}
-        <p>{{ error }}</p> 
+        <p>{{ error }}</p>
     {% endif %}
 </body>
 </html>

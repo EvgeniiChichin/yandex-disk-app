@@ -1,6 +1,5 @@
-
-
 def filter_files_by_type(files_data, media_type):
+    """Фильтрует файлы по типу медиа."""
     filtered_files = []
     for file in files_data:
         mime_type = file.get('mime_type', '')
