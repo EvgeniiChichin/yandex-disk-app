@@ -1,4 +1,4 @@
-# Yandex Disk Public URL File Viewer
+# Yandex Disk File Manager
 
 Данное веб-приложение позволяет просматривать и скачивать файлы, доступные по публичной ссылке Яндекс.Диска.
 
